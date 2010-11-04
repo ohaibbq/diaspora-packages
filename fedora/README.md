@@ -30,7 +30,7 @@ Bootstrap the distribution from git:
 
 Create and install the diaspora bundle and application in
 diaspora/pkg/source according to
-[source README](http://github.com/diaspora/diaspora/tree/master/pkg/source/)
+[source README](http://github.com/diaspora/diaspora-packages/tree/master/pkg/source/)
 
 Setup links from  tarballs to RPM source directory and create spec files:
     % ./prepare-rpm.sh
