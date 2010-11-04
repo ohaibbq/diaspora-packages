@@ -11,7 +11,7 @@
 
 # USAGE: ./pkg/ubuntu-setup.bash  [external hostname]
 # Do NOT run this script as root.
-GIT_REPO=${GIT_REPO:-'http://github.com/diaspora/diaspora.git'}
+GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
 
 arg_hostname="$1"
 
@@ -147,7 +147,9 @@ echo "Installed bundler.."
     # Install extra gems
     echo "Installing more gems.."
     bundle install
-    bundle exec jasmine init
+#    bundle exec jasmine init
+    [ -e lib/tasks/jasmine.rake ] && \
+        mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake
     echo "Installed."
 
     #Configure diaspora
@@ -198,7 +200,7 @@ echo "Installed bundler.."
     echo "Starting server"
     script/server -d
     pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
-    echo " To stop server: pkill thin; kill $(cat $pidfile)"
+    echo " To stop server: pkill thin; kill \$(cat $pidfile)"
     echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 
 )

@@ -24,7 +24,7 @@
 #
 #  Must run as root
 
-GIT_REPO='http://github.com/leamas/diaspora.git'
+GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
 DIASPORA_HOSTNAME=${1:-'mumin.dnsalias.net'}
 
 test $UID = "0" || {
@@ -39,9 +39,9 @@ test $UID = "0" || {
 
 sudo yum groupinstall -y "Development tools"
 
-yum install  -y git bison sqlite-devel  \
+yum install  -y  \
             readline-devel  zlib-devel libyaml-devel libffi-devel \
-            ImageMagick libxslt-devel  libxml2-devel     \
+            ImageMagick libxslt-devel  libxml2-devel sqlite-devel  \
             openssl-devel mongodb-server wget  \
             ruby-devel ruby-libs ruby-ri ruby-irb ruby-rdoc \
             rubygems compat-readline5 git
@@ -95,7 +95,7 @@ fi
 echo "Starting server"
 script/server -d
 pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
-echo " To stop server: pkill thin; kill $(cat $pidfile)"
+echo " To stop server: pkill thin; kill \$(cat $pidfile)"
 echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 
 EOF

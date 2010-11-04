@@ -24,7 +24,7 @@
 #
 #  Must run as root
 
-GIT_REPO=${GIT_REPO:-'http://github.com/diaspora/diaspora.git'}
+GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
 DIASPORA_HOSTNAME=${1:-'mumin.dnsalias.net'}
 
 test $UID = "0" || {
@@ -121,7 +121,7 @@ fi
 echo "Starting server"
 script/server -d
 pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
-echo " To stop server: pkill thin; kill $(cat $pidfile)"
+echo " To stop server: pkill thin; kill \$(cat $pidfile)"
 echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 
 EOF
