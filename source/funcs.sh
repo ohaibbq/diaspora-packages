@@ -42,7 +42,7 @@ function git_id
 
 function checkout()
 # Checkout last version of diaspora unless it's already there.
-# Uses global GIT_REPO to determine repo url
+# Uses global GIT_REPO  and PKG_REPO to determine repo urls.
 # Usage: checkout [commit id, defaults to HEAD]
 # Returns: commit for current branch's HEAD.
 {
@@ -57,21 +57,19 @@ function checkout()
             rm -rf diaspora
         test -d diaspora || {
             git clone --quiet $GIT_REPO;
-            (
-                cd diaspora;
-                git checkout Gemfile Gemfile.lock
-                git remote add upstream \
-                    git://github.com/diaspora/diaspora.git
-                for p in ../../*.patch; do
-                    git apply --whitespace=fix  $p  > /dev/null
-                done &> /dev/null || :
-            )
+            cd diaspora
+                git clone --quiet $PKG_REPO
+                mv diaspora-packages pkg
+            cd ..
+            for p in ../../*.patch; do
+                git apply --whitespace=fix  $p  > /dev/null
+            done &> /dev/null || :
         }
-        echo -n "$GIT_REPO" > '.last-repo'
+        echo -n "$GIT_REPO" > .last-repo
 
         cd diaspora;
-        git fetch --quiet upstream
-        git merge --quiet upstream/master
+        git checkout Gemfile Gemfile.lock
+        git pull --quiet origin master
         [ -n "$1" ] && git reset --hard  --quiet  $1
         git_id  -n
     )

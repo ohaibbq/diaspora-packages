@@ -10,9 +10,12 @@ packages for deployment on Fedora.
 
 Prerequisites:
 
-- ruby-1.8, rubygem, git  and rake as described in
+- For Fedora 13 ruby-1.8, rubygem, git  and rake as described in
   [RPM installation Fedora](http://github.com/diaspora/diaspora/wiki/Rpm-installation-on-fedora)
-  or [Installing-on-CentOS-Fedora](http://github.com/diaspora/diaspora/wiki/Installing-on-CentOS-Fedora)
+  or [Installing-on-CentOS-Fedora](http://github.com/diaspora/diaspora/wiki/Installing-on-CentOS-Fedora).
+
+- For Fedora 14: install required ruby packages:
+    yum install ruby ruby-ri ruby-rdoc rubygems git rake
 
 - A personal environment to build RPM:s, also described in
   [RPM installation Fedora](http://github.com/diaspora/diaspora/wiki/Rpm-installation-on-fedora)
@@ -22,8 +25,8 @@ Install g++ and gcc:
 
 Bootstrap the distribution from git:
     % sudo apt-get install git-core
-    % git clone git://github.com/diaspora/diaspora.git
-    % cd diaspora/pkg/ubuntu
+    % git clone git://github.com/diaspora/diaspora-packages.git
+    % cd diaspora-packages/pkg/fedora
 
 Create and install the diaspora bundle and application in
 diaspora/pkg/source according to
@@ -54,13 +57,11 @@ apache/passenger setup. After configuration, start with:
     /sbin/service diaspora-wsd start
     /sbin/service httpd restart
 
-prepare-rpm.sh prepare creates links  also for all files listed in SOURCES.
-Typically, this is  secondary sources. *make-dist.sh source*
 
 #### Notes
 
 prepare-rpm.sh prepare creates links  also for all files listed in SOURCES.
-Typically, this is  secondary sources.
+Typically, this is  secondary sources listed in the spec file.
 
 The spec-files in dist/ are patched by *./prepare-rpm.sh to reference
 correct versions of diaspora and diaspora-bundle.  Editing spec files should be
@@ -92,8 +93,7 @@ diaspora app.  This is more or less as mandated by LSB and Fedora packaging rule
 
 #### Discussion
 
-The 1.8.7 rebuild is a pain. However, in Fedora 14 1.8.7 is the default
-ruby version.
+The 1.8.7 rebuild in Fedora 13 is a pain.
 
 For better or worse, this installation differs from the procedure outlined
 in the original README.md:

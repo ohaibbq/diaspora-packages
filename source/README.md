@@ -19,8 +19,8 @@ The source tarball could be used as-is, by unpacking add making a
     Bundle: dist/diaspora-bundle-0.0-1010081636_d1a4ee0.tar.gz
     %
 
-This file can be installed anywhere. To use it, add a symlinks from app
-to the bundle'.  Reasonable defaults are to install diaspora in
+This file can be installed anywhere. To use it, add a symlinks from bundle
+to the app.  Reasonable defaults are to install diaspora in
 /usr/share/diaspora and bundle in /usr/lib/diaspora-bundle. With these,
 the link setups is
     % cd /usr/share/diaspora/master
@@ -41,7 +41,7 @@ is generated.
 The source tarball is as retrieved from diaspora with following differences:
 
    - The .git directories are removed (freeing more than 50% of the size).
-   - A new file /master/config/gitversion is created.
+   - A new file config/gitversion is created.
    - The file public/source.tar.gz is generated.
    - The file .bundle/config  is patched. Remove before doing
      *bundle install*
