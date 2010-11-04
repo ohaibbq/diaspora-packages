@@ -5,7 +5,10 @@ This directory contains stuff to install and run diaspora.
 - ubuntu-setup.bash: script which installs all of Diasporas
   dependencies and starts the server.
 
-- bootstrap-fedora-diaspora.sh. does the same for Fedora.
+- fedora14-setup.bash: does the same for Fedora 14.
+
+- rvm: Stuff to make rvm-based, per user installations on
+  Fedora and Ubuntu (not tested ATM, you have been warned)
 
 - source: stuff to package Diaspora into traditional tarballs
   which can be installed.

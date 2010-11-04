@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+#  Install diaspora and the user-installed dependencies
+#
+#  Usage: diaspora-user-setup [external hostname]
+#
+#  Synopsis:
+#      $ git clone 'http://github.com/diaspora/diaspora-packages.git'
+#      $ cd diaspora-packages/rvm
+#      $ sudo ./diaspora-fedora13-setup | sudo ./diaspora-ubuntu-setup
+#      $ ./diaspora-user-setup
+#      $ diaspora/script/server.sh
+#
+#  Installs required user tools including rvm and ruby in user's
+#  home dir. Clones diaspora.
+#
+#  Must not run as root
+
+GIT_REPO=${GIT_REPO:-'http://github.com/diaspora/diaspora.git'}
+PKG_REPO=${PKG_REPO:-'http://github.com/diaspora/diaspora-packages.git'}
+DIASPORA_HOSTNAME=${1:-$(hostname)}
+
+test $UID = "0" && {
+    echo "You must not be root doing  this, giving up"
+    exit 2
+}
+
+set -x
+
+[ -e "$HOME/.rvm/scripts/rvm" ] || {
+    echo '#### Installing rvm ####'
+    wget  http://rvm.beginrescueend.com/releases/rvm-install-head
+    bash < rvm-install-head && rm rvm-install-head
+    if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+        . "$HOME/.rvm/scripts/rvm"
+    else
+        echo "Error: rvm installation failed";
+        exit 1;
+    fi
+    touch $HOME/.bashrc
+    grep -q "rvm/scripts/rvm" $HOME/.bashrc || {
+        echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] &&  \
+            source "$HOME/.rvm/scripts/rvm"' \
+               >> $HOME/.bashrc
+    }
+}
+
+source $HOME/.bashrc
+
+ruby=$(which ruby) || ruby=""
+
+if [[ -z "$ruby" || ("${ruby:0:4}" == "/usr") ]]; then
+    echo '#### Installing ruby (will take forever) ... ####'
+    rvm install ruby-1.8.7-p302
+    rvm --default ruby-1.8.7
+
+    echo "#### Installing bundler ... ####"
+    gem install bundler
+fi
+
+[ -e  diaspora ] && {
+    echo "Moving existing  diaspora out of the way"
+    mv  diaspora  diaspora.$$
+}
+
+git clone $GIT_REPO
+cd diaspora
+git clone $PKG_REPO
+mv diaspora-packages pkg
+bundle install
+#bundle exec jasmine init
+[ -f lib/tasks/jasmine.rake ] &&
+    sudo mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake
+
+#Configure diaspora
+cp config/app_config.yml.example config/app_config.yml
+source pkg/source/funcs.sh
+init_appconfig config/app_config.yml "$DIASPORA_HOSTNAME"
+
+
+echo "Setting up DB..."
+if  bundle exec rake db:seed:dev ; then
+    cat <<- EOM
+	DB ready. Logins -> tom and korth, password -> evankorth.
+	More details ./diaspora/db/seeds/tom.rb. and ./diaspora/db/seeds/dev.rb.
+	EOM
+else
+    cat <<- EOM
+	Database config failed. You might want to remove all db files
+	and/or reset the config file by
+        'cp config/app_config.yml.example config/app_config.yml' before
+	making a new try. Also, make sure the mongodb server is running.
+	EOM
+fi
+
+pidfile="$PWD/log/diaspora-wsd.pid"
+echo "To start server: diaspora/script/server -d"
+echo "To stop server: pkill thin; kill \$(cat $pidfile)"

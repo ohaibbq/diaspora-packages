@@ -1,20 +1,15 @@
 #!/bin/bash
 #
-#  Install diaspora, its dependencies and start.
+#  Install diaspora and  its dependencies.
 #
 #  Usage: pkg/bootstrap-fedora-diaspora.sh [external hostname]
 #
 #  Synopsis, install:
-#      $ git clone git@github.com:diaspora/diaspora.git
-#      $ cd diaspora
-#      $ sudo pkg/bootstrap-fedora-diaspora.sh
+#      $ git clone git@github.com:diaspora/diaspora-packages.git
+#      $ cd diaspora-packages
+#      $ sudo diaspora-packages/fedora14-setup.sh
+#      $ sudo su - diaspora -c "diaspora/script/server -d"
 #
-#  New start:
-#      $ sudo su - diaspora
-#      $ cd diaspora
-#      $ script/server
-#
-#  Unless already existing, the diaspora user is created.
 #  A new diaspora clone is place in ~diaspora.
 #  This dir is populated, configured and finally
 #  acts as a base for running diaspora servers.
@@ -92,11 +87,8 @@ else
 	EOM
 fi
 
-echo "Starting server"
-script/server -d
-pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
+echo 'To start server: sudo su - diaspora -c "diaspora/script/server -d"'
 echo " To stop server: pkill thin; kill \$(cat $pidfile)"
-echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 
 EOF
 

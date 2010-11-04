@@ -140,7 +140,7 @@ echo "Installed bundler.."
     # Check if the user is already in a cloned source if not clone the source
     [[ $( basename $PWD ) == "diaspora" ]]  && \
         echo "Already in diaspora directory" ||  \
-        { git $GIT_REPO && cd diaspora
+        { git clone $GIT_REPO && cd diaspora
               echo "Cloned the source.."
         }
 

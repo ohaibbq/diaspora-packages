@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+#  Install the packages Diaspora needs on ubuntu
+#
+#  Usage: ./diaspora-ubuntu-setup  [external hostname]
+#
+#  Synopsis:
+#      $ git clone 'http://github.com/diaspora/diaspora-packages.git'
+#      $ cd diaspora-packages/rvm
+#      $ sudo diaspora-ubuntu-setup
+#
+#  Based on work of hemanth.hm@gmail.com with contributions from
+#  Mackenzie Morgan (maco) and Daniel Thomas (drt24)
+#
+#   Copyright (c) 2010, Diaspora Inc.  This file is
+#   licensed under the Affero General Public License version 3 or later.  See
+#   the COPYRIGHT file.
+#
+#
+#   Must run as root
+#
+
+[[ "$(whoami)" == "root" ]] ||  {
+  echo 'You must be root to do this'
+  exit 1
+}
+
+grep -v '^#' /etc/apt/sources.list | grep -q universe || {
+    cat <<- EOF
+	"Warning: it looks like you have not enabled universe in your
+	/etc/apt/sources.list. Most likely, this means trouble.
+	Better not try ;)
+	EOF
+    exit 2
+}
+
+apt-get update
+apt-get install --no-install-recommends -qy\
+     build-essential libxslt1-dev  libxml2  \
+     rake python-software-properties git-core \
+     imagemagick libmagick9-dev  wget
+
+
+# Get the current release and install mongodb
+release=$( lsb_release -a | awk '/Release:/ {print $2}')
+if [ $RELEASE == "10.04" ]; then
+    echo "Installing mongodb-server from standard ubuntu repos"
+    if [[  ! -f /usr/lib/libmozjs.so ]]; then
+        # See:
+        # https://bugs.launchpad.net/ubuntu/+source/mongodb/+bug/557024
+        apt-get install xulrunner-1.9
+        xulversion=$( xulrunner --gre-version)
+        ln -sf "/usr/lib/xulrunner-$xulversion/libmozjs.so" /usr/lib
+    fi
+    apt-get -qy  --no-install-recommends install mongodb
+else # 10.10
+    lsb=$(lsb_release -rs)
+    ver=${lsb//.+(0)/.}
+    repo="deb http://downloads.mongodb.org/distros/ubuntu ${ver} 10gen"
+    echo -n "Installing mongodb-server from 10gen."
+    echo ${repo} |  tee -a /etc/apt/sources.list
+    echo "Fetching keys.."
+    apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+    echo -n "."
+    apt-get  update
+    echo -n "."
+    apt-get -qy  --no-install-recommends install mongodb-stable
+    echo "Done installing mongodb-stable.."
+fi

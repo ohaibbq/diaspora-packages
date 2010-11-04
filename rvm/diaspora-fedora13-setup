@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+#  Install diaspora dependencies
+#
+#  Usage: diaspora-fedora13-setup
+#
+#  Synopsis, install:
+#      $ git clone 'http://github.com/diaspora/diaspora-packages.git'
+#      $ cd diaspora-packages/rvm
+#      $ sudo diaspora-fedora13-setup
+#
+#  Installs all packages required by diaspora on Fedora 13.
+#  Must run as root
+
+test $UID = "0" || {
+    echo "You need to be root to do this, giving up"
+    exit 2
+}
+
+yum groupinstall -y "Development tools"
+
+yum install  -y git sqlite-devel readline-devel  zlib-devel        \
+            libyaml-devel libffi-devel  ImageMagick libxslt-devel  \
+            libxml2-devel openssl-devel mongodb-server wget curl  \
+            iconv-devel
+
+chkconfig mongod on
+service mongod start
