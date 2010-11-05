@@ -67,6 +67,8 @@ sed -i '/^cd /s|.*|cd %{_datadir}/diaspora/master|'  \
 
 mkdir -p  $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d
 cp %SOURCE3  $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/diaspora
+mkdir -p  $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora
+
 
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/diaspora
 cp -ar master $RPM_BUILD_ROOT/%{_datadir}/diaspora
@@ -75,6 +77,17 @@ rm -rf $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/vendor/*
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/lib/diaspora/uploads
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/lib/diaspora/tmp
 cp %SOURCE2  $RPM_BUILD_ROOT/%{_datadir}/diaspora
+
+cp master/config/app_config.yml.example  \
+    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/app_config.yml
+cp master/config/server.sh  \
+    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/server.sh
+%{SOURCE4}  \
+    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/app_config.yml  \
+    $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/config/app_config.yml
+%{SOURCE4}  \
+    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/server.sh  \
+    $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/server.sh
 
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/log/diaspora
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/run/diaspora
@@ -121,16 +134,16 @@ rm -fr $RPM_BUILD_ROOT
 %attr(-, diaspora, diaspora) %{_datadir}/diaspora/master/config.ru
 %attr(-, diaspora, diaspora) %{_datadir}/diaspora/master/config/environment.rb
 %attr(-, diaspora, diaspora) %{_datadir}/diaspora/master/pkg/fedora/dist
+%attr(-, diaspora, diaspora) %{_datadir}/diaspora/master/pkg/ubuntu/dist
 %attr(-, diaspora, diaspora) %{_localstatedir}/log/diaspora
 %attr(-, diaspora, diaspora) %{_localstatedir}/lib/diaspora/uploads
 %attr(-, diaspora, diaspora) %{_localstatedir}/lib/diaspora/tmp
 %attr(-, diaspora, diaspora) %{_localstatedir}/run/diaspora
 
+%{_sysconfdir}/diaspora
 %{_datadir}/diaspora/master/tmp
 %{_datadir}/diaspora/master/public/uploads
 %{_datadir}/diaspora/master/log
-%{_datadir}/diaspora/master/pkg/fedora/dist
-%{_datadir}/diaspora/master/pkg/ubuntu/dist
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/diaspora
 
