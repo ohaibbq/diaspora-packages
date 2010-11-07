@@ -1,21 +1,40 @@
+#
+#  Build diaspora bundle rpm
+#
+#  Options:
+#       --with dev   Builds a bundle-dev with gems, defaults to
+#                    bundle-rt only containing default and production gems.
+
+%{!?_with_dev: %{!?_without_dev: %define _without_dev --without-dev}}
+
 %define         git_release     HEAD
 
 # Turn off java repack, this is in /usr/lib[64] anyway
 %define         __jar_repack    %{nil}
 
 # Turn off the brp-python-bytecompile script, *pyc/pyo causes problems
+# not worth solving for a few test scripts.
 %global __os_install_post %(echo '%{__os_install_post}' |
        sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 
 Summary:        Rubygem bundle for diaspora
-Name:           diaspora-bundle
+Provides:       diaspora-bundle
+
+%if %{?_with_dev:1}0
+Name:           diaspora-bundle-dev
+Conflicts:	diaspora-bundle-rt
+%else
+Name:           diaspora-bundle-rt
+Conflicts:	diaspora-bundle-dev
+%endif
+
 Version:        0.0
 Release:        1.%{git_release}%{?dist}
 License:        Ruby
 Group:          Applications/Communications
 URL:            http://www.joindiaspora.com/
 Vendor:         joindiaspora.com
-Source:         %{name}-%{version}-%{git_release}.tar.gz
+Source:         diaspora-bundle-%{version}-%{git_release}.tar.gz
 Prefix:         %{_prefix}
 BuildRoot:      %{_tmpdir}/not-used-since-F13/
 
@@ -32,17 +51,23 @@ Group:     Development/Libraries
 Requires:  %{name} = %{version}
 
 %description devel
-Source file usede to compile native libraries in diaspora-bundle.
+Source files used to compile native libraries in diaspora-bundle.
 
 %prep
-%setup -q -n %{name}-%{version}-%{git_release}
+%setup -q -n diaspora-bundle-%{version}-%{git_release}
 
 %build
+%if %{?_with_dev:1}0
 bundle install --local --deployment --without ri rdoc
+%else
+bundle install --local --deployment --without ri rdoc development test
+%endif
 
 pushd vendor/bundle/ruby/1.8/gems
+
+%if %{?_with_dev:1}0
+
     # In repo (2.2.4)
-    test -d gherkin-*/ext && {
     pushd gherkin-*/ext
     # Recompile all shared libraries using -O2 flag
     for lexer_dir in */ ; do
@@ -60,14 +85,27 @@ pushd vendor/bundle/ruby/1.8/gems
         popd
     done
     popd
-    }
 
-    test -d ffi-0.6.3/lib && {
     pushd  ffi-0.6.3/lib
         rm ffi_c.so
         ln -s ../ext/ffi_c/ffi_c.so .
     popd
+
+    # In repo (0.10.4)
+    test -d ruby-debug-base-0.10.3/lib && {
+        pushd ruby-debug-base-0.10.3/lib
+            rm ruby_debug.so
+            ln -s ../ext/ruby_debug.so .
+        popd
     }
+
+    #in repo
+    pushd linecache-0.43/lib/
+        rm trace_nums.so
+        ln -s ../ext/trace_nums.so .
+    popd
+
+%endif
 
     # In repo as 1.2.5, rawhide 1.2.7
     pushd  thin-1.2.7/lib
@@ -78,12 +116,6 @@ pushd vendor/bundle/ruby/1.8/gems
     pushd bson_ext-1.1/ext/bson_ext
         rm cbson.so
         ln -s ../cbson/cbson.so .
-    popd
-
-    # In repo (0.10.4)
-    pushd ruby-debug-base-0.10.3/lib
-        rm ruby_debug.so
-        ln -s ../ext/ruby_debug.so .
     popd
 
     #in repo
@@ -114,12 +146,6 @@ pushd vendor/bundle/ruby/1.8/gems
         ln -s ../../parser/parser.so .
     popd
 
-    #in repo
-    pushd linecache-0.43/lib/
-        rm trace_nums.so
-        ln -s ../ext/trace_nums.so .
-    popd
-
     pushd ../bundler/gems/em-http-request*/lib
         rm em_buffer.so
         ln -s ../ext/buffer/em_buffer.so .
@@ -127,17 +153,16 @@ pushd vendor/bundle/ruby/1.8/gems
         ln -s ../ext/http11_client/http11_client.so .
     popd
 
-    find . -name \*.css -print       | xargs chmod 644
-    find . -name \*.js  -print       | xargs chmod 644
-    find . -name \*.treetop -print   | xargs chmod 644
-    find . -name \*.rdoc -print      | xargs chmod 644
+    find . -name \*.css -print       | xargs chmod 644 || :
+    find . -name \*.js  -print       | xargs chmod 644 || :
+    find . -name \*.treetop -print   | xargs chmod 644 || :
+    find . -name \*.rdoc -print      | xargs chmod 644 || :
 
     for f in $(find . -name \*.rb); do
-      sed -i -e '/^#!/d' $f
-      chmod 0644 $f
-    done &> /dev/null
+      sed -i -e '/^#!/d' $f && chmod 0644 $f
+    done &> /dev/null  || :
     find .  -perm /u+x  -type f -print0 |
-        xargs --null sed -i 's|^#!/usr/local/bin/ruby|#!/usr/bin/ruby|'
+        xargs --null sed -i 's|^#!/usr/local/bin/ruby|#!/usr/bin/ruby|' || :
 
     chmod 755 abstract-1.0.0/abstract.gemspec  || :
     chmod 755 cucumber-rails-0.3.2/templates/install/script/cucumber || :

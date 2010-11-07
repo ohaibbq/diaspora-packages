@@ -69,7 +69,6 @@ mkdir -p  $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d
 cp %SOURCE3  $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/diaspora
 mkdir -p  $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora
 
-
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/diaspora
 cp -ar master $RPM_BUILD_ROOT/%{_datadir}/diaspora
 cp -ar  master/.bundle $RPM_BUILD_ROOT/%{_datadir}/diaspora/master
@@ -80,14 +79,13 @@ cp %SOURCE2  $RPM_BUILD_ROOT/%{_datadir}/diaspora
 
 cp master/config/app_config.yml.example  \
     $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/app_config.yml
-cp master/config/server.sh  \
-    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/server.sh
+cp master/config/server.sh  $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora
 %{SOURCE4}  \
-    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/app_config.yml  \
-    $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/config/app_config.yml
+    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/server.sh \
+    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/server.sh
 %{SOURCE4}  \
-    $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/server.sh  \
-    $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/server.sh
+    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/app_config.yml  \
+    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/app_config.yml
 
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/log/diaspora
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/run/diaspora

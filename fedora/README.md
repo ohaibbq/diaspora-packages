@@ -39,8 +39,8 @@ Build rpms:
     rpmbuild -ba dist/diaspora.spec
     rpmbuild -ba dist/diaspora-bundle.spec
 
-Install (as root):
-    rpm -U ~/rmpbuild/rpms/i686/diaspora-bundle-0.0-1.1010042345_4343fade43.fc13.i686
+Install (as root, the exact name of your rpm will differ):
+    rpm -U ~/rmpbuild/rpms/i686/diaspora-bundle-rt-0.0-1.1010042345_4343fade43.fc13.i686
     rpm -U ~/rmpbuild/rpms/noarch/diaspora-0.0-1.1010042345_4343fade43.fc13.noarch
 
 Initiate (as root).
@@ -62,6 +62,12 @@ apache/passenger setup. After configuration, start with:
 
 prepare-rpm.sh prepare creates links  also for all files listed in SOURCES.
 Typically, this is  secondary sources listed in the spec file.
+
+Above steps creates and uses a runtime (-rt) bundle which not contains the
+test or development tools. To build and install a bundle containing all
+of this stuff (exact filenames varies):
+    rpmbuild -ba --with dev dist/diaspora-bundle.spec
+    rpm -U ~/rmpbuild/rpms/i686/diaspora-bundle-dev-0.0-1.1010042345_4343fade43.fc13.i686
 
 The spec-files in dist/ are patched by *./prepare-rpm.sh to reference
 correct versions of diaspora and diaspora-bundle.  Editing spec files should be
