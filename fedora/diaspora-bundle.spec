@@ -57,6 +57,7 @@ Source files used to compile native libraries in diaspora-bundle.
 %setup -q -n diaspora-bundle-%{version}-%{git_release}
 
 %build
+export CONFIGURE_ARGS="--with-cflags='%{optflags}'"
 %if %{?_with_dev:1}0
 bundle install --local --deployment --without ri rdoc
 %else
