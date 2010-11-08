@@ -5,7 +5,6 @@
 # Usage: See  function usage() at bottom.
 #
 GIT_REPO='http://github.com/diaspora/diaspora.git'
-PKG_REPO='http://github.com/diaspora/diaspora-packages.git'
 VERSION='0.0'
 
 . ./funcs.sh
