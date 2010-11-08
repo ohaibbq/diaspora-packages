@@ -2,7 +2,7 @@
 #  Build diaspora bundle rpm
 #
 #  Options:
-#       --with dev   Builds a bundle-dev with gems, defaults to
+#       --with dev   Builds a bundle-dev with all gems, defaults to
 #                    bundle-rt only containing default and production gems.
 
 %{!?_with_dev: %{!?_without_dev: %define _without_dev --without-dev}}
@@ -29,7 +29,7 @@ Conflicts:      diaspora-bundle-dev
 
 Version:        0.0
 Release:        1.%{git_release}%{?dist}
-Provides:       diaspora-bundle = %version
+Provides:       diaspora-bundle = %version-%{release}
 License:        Ruby
 Group:          Applications/Communications
 URL:            http://www.joindiaspora.com/
