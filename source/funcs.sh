@@ -58,7 +58,7 @@ function checkout()
         test -d diaspora || {
             git clone --quiet $GIT_REPO;
             cd diaspora
-                git submodule update --init pkg
+                git submodule --quiet update --init pkg &>/dev/null
             cd ..
             for p in ../../*.patch; do
                 git apply --whitespace=fix  $p  > /dev/null
