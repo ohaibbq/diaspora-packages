@@ -4,7 +4,14 @@ Creates diaspora source tarballs.
 
 #### Generic source synopsis
 
+Bootstrap package from git repo:
+    % sudo apt-get install git-core
+    % git clone git://github.com/diaspora/diaspora.git
+    % cd diaspora
+    % git submodule update --init pkg
+
 Generate source tarball:
+    % cd pkg/source
     % ./make-dist.sh source
     Using repo:          http://github.com/diaspora/diaspora.git
     Commit id:           1010092232_b313272
@@ -12,7 +19,7 @@ Generate source tarball:
     Required bundle:     1010081636_d1a4ee0
     %
 
-The source tarball could be used as-is, by unpacking add making a
+The source tarball could be used as-is, by unpacking and making a
 *bundle install*. An alternative is to generate a canned bundle like:
     % ./make-dist.sh bundle
           [ lot's of output...]
@@ -22,7 +29,7 @@ The source tarball could be used as-is, by unpacking add making a
 This file can be installed anywhere. To use it, add a symlinks from bundle
 to the app.  Reasonable defaults are to install diaspora in
 /usr/share/diaspora and bundle in /usr/lib/diaspora-bundle. With these,
-the link setups is
+the link setup is
     % cd /usr/share/diaspora/master
     % rm -rf vendor
     % ln -sf /usr/lib/diaspora-bundle/vendor  vendor

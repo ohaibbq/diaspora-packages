@@ -18,18 +18,18 @@
        sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 
 Summary:        Rubygem bundle for diaspora
-Provides:       diaspora-bundle
 
 %if %{?_with_dev:1}0
 Name:           diaspora-bundle-dev
-Conflicts:	diaspora-bundle-rt
+Conflicts:      diaspora-bundle-rt
 %else
 Name:           diaspora-bundle-rt
-Conflicts:	diaspora-bundle-dev
+Conflicts:      diaspora-bundle-dev
 %endif
 
 Version:        0.0
 Release:        1.%{git_release}%{?dist}
+Provides:       diaspora-bundle = %version
 License:        Ruby
 Group:          Applications/Communications
 URL:            http://www.joindiaspora.com/

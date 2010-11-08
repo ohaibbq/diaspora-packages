@@ -7,14 +7,16 @@ work as a first step towards packaging, but should be usable as is.
 
 Bootstrap the distribution from git:
     % sudo apt-get install git-core
-    % git clone git://github.com/diaspora/diaspora-packages.git
-    % cd diaspora-packages/ubuntu
+    % git clone git://github.com/diaspora/diaspora.git
+    % cd diaspora
+    % git submodule update --init pkg
 
 Create and install the diaspora bundle and application in
 diaspora/pkg/source according to
 [source README](http://github.com/diaspora/diaspora-packages/tree/master/pkg/source/)
 
 Install the dependencies (a good time for a coffe break):
+    % cd pkg/ubuntu
     % sudo ./diaspora-install-deps
 
 Install, initiate and start the server;
