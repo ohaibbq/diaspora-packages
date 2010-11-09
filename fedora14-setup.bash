@@ -59,8 +59,8 @@ su - diaspora << EOF
 }
 
 git clone $GIT_REPO
-
 cd diaspora
+git submodule update --init pkg
 
 bundle install --deployment
 #bundle exec jasmine init
