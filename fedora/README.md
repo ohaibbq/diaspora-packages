@@ -15,7 +15,7 @@ Prerequisites:
   or [Installing-on-CentOS-Fedora](http://github.com/diaspora/diaspora/wiki/Installing-on-CentOS-Fedora).
 
 - For Fedora 14: install required ruby packages:
-    yum install ruby ruby-ri ruby-rdoc rubygems git rake
+    yum install ruby ruby-ri ruby-rdoc ruby-devel rubygems git rake
 
 - A personal environment to build RPM:s, also described in
   [RPM installation Fedora](http://github.com/diaspora/diaspora/wiki/Rpm-installation-on-fedora)
@@ -25,16 +25,15 @@ Install g++ and gcc:
 
 Bootstrap the distribution from git:
     % sudo apt-get install git-core
-    % git clone git://github.com/diaspora/diaspora.git
-    % cd diaspora
-    % git submodule update --init pkg
+    % git clone git://github.com/diaspora/diaspora-packages.git
+    % cd diaspora-packages
 
 Create and install the diaspora bundle and application in
 diaspora-packages/source according to
 [source README](http://github.com/diaspora/diaspora-packages/tree/master/pkg/source/)
 
 Setup links from  tarballs to RPM source directory and create spec files:
-    % cd pkg/fedora
+    % cd fedora
     % ./prepare-rpm.sh
 
 Build rpms:

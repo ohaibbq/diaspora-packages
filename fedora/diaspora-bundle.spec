@@ -40,6 +40,7 @@ BuildRoot:      %{_tmpdir}/not-used-since-F13/
 
 Requires(pre):  shadow-utils
 Requires:       ruby(abi) = 1.8
+BuildRequires:  rubygems
 
 %description
 The ruby apps bundled with diaspora, as provided by
@@ -54,15 +55,22 @@ Requires:  %{name} = %{version}
 Source files used to compile native libraries in diaspora-bundle.
 
 %prep
+test -e $HOME/.rvm && {
+    # ~/.rvm genererates rpath in executables
+    echo "Error: You must move  $HOME/.rvm out of the way before building RPM."
+    exit 1
+}
 %setup -q -n diaspora-bundle-%{version}-%{git_release}
 
 %build
+gem install --install_dir $HOME/.rvm --bindir $HOME/bin --no-ri --no-rdoc bundler
 export CONFIGURE_ARGS="--with-cflags='%{optflags}'"
 %if %{?_with_dev:1}0
 bundle install --local --deployment --without ri rdoc
 %else
 bundle install --local --deployment --without ri rdoc development test
 %endif
+rm -rf $HOME/.rvm
 
 pushd vendor/bundle/ruby/1.8/gems
 
@@ -207,6 +215,7 @@ exit 0
 find . -name .git | xargs rm -rf
 find . -name .gitignore -delete
 find . -name \*.o -delete  || :
+find . -name MIT-LICENSE* -print | xargs chmod 644
 
 test -d vendor/bundle/ruby/1.8//gems/selenium-webdriver-0.0.* && {
 pushd  vendor/bundle//ruby/1.8/gems/selenium-webdriver-0.0.*/lib/selenium/webdriver/
@@ -223,6 +232,9 @@ pushd  vendor/bundle//ruby/1.8/gems/selenium-webdriver-0.0.*/lib/selenium/webdri
 popd
 }
 
+rm -rf  vendor/bundle/ruby/1.8/gems/chef-*/distro
+rm -rf  vendor/bundle/ruby/1.8/gems/rake-*/test
+rm -rf  vendor/bundle/ruby/1.8/gems/mini-magick-*/test
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
 cp -ar  vendor  $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
 cp -a Gemfile Gemfile.lock $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
@@ -242,7 +254,7 @@ cat files >> dirs && cp dirs files
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -fr $RPM_BUILD_ROOT
 
 %files -f files
-%defattr(-, diaspora, diaspora, 0755)
+%defattr(-, root, root, 0755)
 %doc  COPYRIGHT AUTHORS GNU-AGPL-3.0 docs
 
 %files -f dev-files devel

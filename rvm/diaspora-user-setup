@@ -58,15 +58,15 @@ if [[ -z "$ruby" || ("${ruby:0:4}" == "/usr") ]]; then
     gem install bundler
 fi
 
-[ -e  diaspora ] && {
-    echo "Moving existing  diaspora out of the way"
-    mv  diaspora  diaspora.$$
-}
+cd $HOME
+if [ -d diaspora]; then
+    echo "Moving existing diaspora dir out of the way to diaspora.$$"
+    mv diaspora diaspora.$$
+fi
 
 git clone $GIT_REPO
 cd diaspora
-git clone $PKG_REPO
-mv diaspora-packages pkg
+git submodule update --init pkg
 bundle install
 #bundle exec jasmine init
 [ -f lib/tasks/jasmine.rake ] &&

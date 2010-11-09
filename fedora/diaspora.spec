@@ -37,7 +37,7 @@ Requires:  %{name} = %{version}
 
 %description wsd
 Tools to use the diaspora websocket daemon as a service e. g., when
-using papche passenger or system-wide installed thin server to run
+using apache passenger or system-wide installed thin server to run
 diaspora.
 
 
@@ -49,6 +49,7 @@ find . -perm /u+x -type f -exec \
 
 %build
 rm -rf master/vendor/bundle
+chmod 755 master/lib/cruise/build.rb
 
 %install
 rm -fr $RPM_BUILD_ROOT
@@ -138,16 +139,20 @@ rm -fr $RPM_BUILD_ROOT
 %attr(-, diaspora, diaspora) %{_localstatedir}/lib/diaspora/tmp
 %attr(-, diaspora, diaspora) %{_localstatedir}/run/diaspora
 
-%{_sysconfdir}/diaspora
+%dir %{_sysconfdir}/diaspora
+%config(noreplace) %{_sysconfdir}/diaspora/server.sh
+%config(noreplace) %{_sysconfdir}/diaspora/app_config.yml
 %{_datadir}/diaspora/master/tmp
 %{_datadir}/diaspora/master/public/uploads
 %{_datadir}/diaspora/master/log
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/diaspora
 
+
 %files wsd
 %defattr(-, root, root, 0755)
 %{_sysconfdir}/init.d/diaspora-wsd
+
 
 %changelog
 * Fri Sep 24 2010 Alec Leamas  <leamas.alec@gmail.com>  0.0-1.1009280542_859ec2d

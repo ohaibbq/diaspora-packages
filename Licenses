@@ -1,10 +1,9 @@
-
 abstract:		Ruby
 actionmailer:		MIT
 actionpack:		MIT
 activemodel:		MIT
 activerecord:		MIT
-activeresource:		?   (Other distros uses MIT, "Ruby-alike", no pointers)
+activeresource:	        MIT  Copyright + license in code.
 activesupport:		MIT
 addressable:		MIT
 arel:			MIT
@@ -45,7 +44,7 @@ linecache:		GPLv2
 mail:			MIT
 mime-types:		GPLv2+Ruby+Artistic 2.0
 mini_magick:		MIT
-mini_fb:		?
+mini_fb:	        MIT https://github.com/appoxy/mini_fb/issues#issue/16
 mixlib-authentication:  ASL 2.0
 mixlib-cli              ASL 2.0
 mixlib-config           ASL 2.0

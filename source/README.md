@@ -6,12 +6,11 @@ Creates diaspora source tarballs.
 
 Bootstrap package from git repo:
     % sudo apt-get install git-core
-    % git clone git://github.com/diaspora/diaspora.git
-    % cd diaspora
-    % git submodule update --init pkg
+    % git clone git://github.com/diaspora/diaspora-packages.git
+    % cd diaspora-packages
 
 Generate source tarball:
-    % cd pkg/source
+    % cd source
     % ./make-dist.sh source
     Using repo:          http://github.com/diaspora/diaspora.git
     Commit id:           1010092232_b313272
@@ -26,7 +25,7 @@ The source tarball could be used as-is, by unpacking and making a
     Bundle: dist/diaspora-bundle-0.0-1010081636_d1a4ee0.tar.gz
     %
 
-This file can be installed anywhere. To use it, add a symlinks from bundle
+This file can be installed anywhere. To use it, add symlinks from bundle
 to the app.  Reasonable defaults are to install diaspora in
 /usr/share/diaspora and bundle in /usr/lib/diaspora-bundle. With these,
 the link setup is

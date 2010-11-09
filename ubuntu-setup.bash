@@ -136,71 +136,72 @@ sudo gem install bundler
 echo "Installed bundler.."
 
 # Take a clone of Diaspora
-(
-    # Check if the user is already in a cloned source if not clone the source
-    [[ $( basename $PWD ) == "diaspora" ]]  && \
-        echo "Already in diaspora directory" ||  \
-        { git clone $GIT_REPO && cd diaspora
-              echo "Cloned the source.."
+# Check if the user is already in a cloned source if not clone the source
+[[ $( basename $PWD ) == "diaspora" ]]  && \
+    echo "Already in diaspora directory" ||  {
+        git clone $GIT_REPO && {
+            cd diaspora
+            git submodule update --init pkg
+            echo "Cloned the source.."
         }
+    }
 
-    # Install extra gems
-    echo "Installing more gems.."
-    bundle install
+# Install extra gems
+echo "Installing more gems.."
+bundle install
 #    bundle exec jasmine init
-    [ -e lib/tasks/jasmine.rake ] && \
-        mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake
-    echo "Installed."
+[ -e lib/tasks/jasmine.rake ] && \
+    mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake
+echo "Installed."
 
-    #Configure diaspora
-    cp config/app_config.yml.example config/app_config.yml
-    hostname=$( awk '/pod_url:/ { print $2; exit }' <config/app_config.yml)
+#Configure diaspora
+cp config/app_config.yml.example config/app_config.yml
+hostname=$( awk '/pod_url:/ { print $2; exit }' <config/app_config.yml)
 
-    if [ -n "$arg_hostname" ]; then
-        sed -i "/pod_url:/s|$hostname|$arg_hostname|g" config/app_config.yml &&
-        echo "config/app_config.yml updated."
-        exit 0
-    else
-        while : ; do
-            echo "Current hostname is \"$hostname\""
-            echo -n "Enter new hostname [$hostname] :"
-            read new_hostname garbage
-            echo -n "Use \"$new_hostname\" as pod_url (Yes/No) [Yes]? :"
-            read yesno garbage
-            [ "${yesno:0:1}" = 'y' -o "${yesno:0:1}" = 'Y' -o -z "$yesno" ] && {
-                sed -i "/pod_url:/s|$hostname|$new_hostname|g" \
-                    config/app_config.yml &&
-                echo "config/app_config.yml updated."
-                break
-            }
-        done
-    fi
+if [ -n "$arg_hostname" ]; then
+    sed -i "/pod_url:/s|$hostname|$arg_hostname|g" config/app_config.yml &&
+    echo "config/app_config.yml updated."
+    exit 0
+else
+    while : ; do
+        echo "Current hostname is \"$hostname\""
+        echo -n "Enter new hostname [$hostname] :"
+        read new_hostname garbage
+        echo -n "Use \"$new_hostname\" as pod_url (Yes/No) [Yes]? :"
+        read yesno garbage
+        [ "${yesno:0:1}" = 'y' -o "${yesno:0:1}" = 'Y' -o -z "$yesno" ] && {
+            sed -i "/pod_url:/s|$hostname|$new_hostname|g" \
+                config/app_config.yml &&
+            echo "config/app_config.yml updated."
+            break
+        }
+    done
+fi
 
 
-    # Create the shared directory which is used by rake db:seed:tom
-    ### mkdir shared
+# Create the shared directory which is used by rake db:seed:tom
+### mkdir shared
 
-    # Install DB setup
-    echo "Setting up DB..."
-    if  rake db:seed:dev ; then
-        cat <<- EOF
+# Install DB setup
+echo "Setting up DB..."
+if  rake db:seed:dev ; then
+    cat <<- EOF
 	DB ready. Logins -> tom or korth,  password -> evankorth.
 	More details ./diaspora/db/seeds/tom.rb. and ./diaspora/db/seeds/dev.rb.
 	EOF
-    else
+else
         cat <<- EOF
 	Database config failed. You might want to remove all db files with
 	'rm -rf /var/lib/mongodb/*' and/or reset the config file by
 	'cp config/app_config.yml.example config/app_config.yml' before
 	making a new try. Also, make sure the mongodb server is running
 	EOF
-    fi
+fi
 
-    # Run appserver
-    echo "Starting server"
-    script/server -d
-    pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
-    echo " To stop server: pkill thin; kill \$(cat $pidfile)"
-    echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
+# Run appserver
+echo "Starting server"
+script/server -d
+pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
+echo " To stop server: pkill thin; kill \$(cat $pidfile)"
+echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 
-)
