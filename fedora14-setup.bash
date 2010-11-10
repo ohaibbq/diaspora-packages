@@ -20,7 +20,7 @@
 #  Must run as root
 
 GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
-DIASPORA_HOSTNAME=${1:-'mumin.dnsalias.net'}
+DIASPORA_HOSTNAME=${1:-$(hostname)}
 
 test $UID = "0" || {
     echo "You need to be root to do this, giving up"
@@ -48,6 +48,7 @@ getent passwd diaspora  >/dev/null || {
     echo "Created user diaspora"
 }
 
+
 service mongod start
 
 su - diaspora << EOF
@@ -62,7 +63,9 @@ git clone $GIT_REPO
 cd diaspora
 git submodule update --init pkg
 
-bundle install --deployment
+rm -rf .bundle
+
+bundle install --path vendor/bundle
 #bundle exec jasmine init
 
 #Configure diaspora

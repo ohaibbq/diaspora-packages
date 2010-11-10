@@ -7,10 +7,16 @@
 #   Copyright (c) 2010, Diaspora Inc.  This file is
 #   licensed under the Affero General Public License version 3 or later.  See
 #   the COPYRIGHT file.
-
-
-# USAGE: ./pkg/ubuntu-setup.bash  [external hostname]
+# USAGE: ./pkg/ubun/tu-setup.bash  [external hostname]
 # Do NOT run this script as root.
+#
+# Synopsis:
+#   git clone http://github.com/diaspora/diaspora.git
+#   cd diaspora
+#   git submodule update --init pkg
+#   pkg/ubuntu-setup.bash
+#   ./script/server
+
 GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
 
 arg_hostname="$1"
@@ -148,7 +154,10 @@ echo "Installed bundler.."
 
 # Install extra gems
 echo "Installing more gems.."
-bundle install
+bundle install || {
+    echo "OOPS: bundle install crashed. Let's try once again!"
+    bundle install
+}
 #    bundle exec jasmine init
 [ -e lib/tasks/jasmine.rake ] && \
     mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake
@@ -161,7 +170,6 @@ hostname=$( awk '/pod_url:/ { print $2; exit }' <config/app_config.yml)
 if [ -n "$arg_hostname" ]; then
     sed -i "/pod_url:/s|$hostname|$arg_hostname|g" config/app_config.yml &&
     echo "config/app_config.yml updated."
-    exit 0
 else
     while : ; do
         echo "Current hostname is \"$hostname\""
@@ -177,10 +185,6 @@ else
         }
     done
 fi
-
-
-# Create the shared directory which is used by rake db:seed:tom
-### mkdir shared
 
 # Install DB setup
 echo "Setting up DB..."
@@ -198,10 +202,6 @@ else
 	EOF
 fi
 
-# Run appserver
-echo "Starting server"
-script/server -d
-pidfile="~diaspora/diaspora/log/diaspora-wsd.pid"
+echo 'To start server: sudo su - diaspora -c "diaspora/script/server -d"'
 echo " To stop server: pkill thin; kill \$(cat $pidfile)"
-echo 'To restart server: sudo su - diaspora -c "diaspora/script/server -d"'
 

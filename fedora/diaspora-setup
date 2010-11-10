@@ -8,6 +8,9 @@ export PATH=$PATH:/usr/local/bin
 
 arg_hostname="$1"
 
+path=$( readlink -fn $0) && cd $(dirname $path)/../.. || \
+    cd /usr/share/diaspora/master
+
 test $UID = "0" || {
     echo "You need to be root to do this, giving up"
     exit 2
@@ -21,7 +24,6 @@ test -n "$services" && {
 
 /sbin/service mongod start || :
 
-cd /usr/share/diaspora/master
 
 libdir=$(rpm --eval %_libdir)
 
@@ -29,6 +31,7 @@ rm -rf vendor
 ln -s $libdir/diaspora-bundle/vendor .
 ln -sf $libdir/diaspora-bundle/Gemfile .
 ln -sf $libdir/diaspora-bundle/Gemfile.lock .
+ln -sf $libdir/diaspora-bundle/config .bundle/config
 
 test -e config/app_config.yml ||
     cp config/app_config.yml.example config/app_config.yml

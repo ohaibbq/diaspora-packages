@@ -67,7 +67,7 @@ fi
 git clone $GIT_REPO
 cd diaspora
 git submodule update --init pkg
-bundle install
+bundle install --path vendor/bundle
 #bundle exec jasmine init
 [ -f lib/tasks/jasmine.rake ] &&
     sudo mv lib/tasks/jasmine.rake lib/tasks/jasmine.no-rake

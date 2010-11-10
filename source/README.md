@@ -34,7 +34,7 @@ the link setup is
     % ln -sf /usr/lib/diaspora-bundle/vendor  vendor
     % ln -sf /usr/lib/diaspora-bundle/Gemfile .
     % ln -sf /usr/lib/diaspora-bundle/Gemfile.lock .
-
+    % ln -sf /usr/lib/diaspora-bundle/config .bundle/config
 
 The directories tmp, log, and public/uploads needs to be writable. If using
 apache passenger, read the docs on uid used and file ownership.

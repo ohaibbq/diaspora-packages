@@ -63,12 +63,12 @@ test -e $HOME/.rvm && {
 %setup -q -n diaspora-bundle-%{version}-%{git_release}
 
 %build
-gem install --install_dir $HOME/.rvm --bindir $HOME/bin --no-ri --no-rdoc bundler
+gem install --install-dir $HOME/.rvm --bindir $HOME/bin --no-ri --no-rdoc bundler
 export CONFIGURE_ARGS="--with-cflags='%{optflags}'"
 %if %{?_with_dev:1}0
-bundle install --local --deployment --without ri rdoc
+env GEM_HOME=$HOME/.rvm bundle install --local --deployment --without ri rdoc
 %else
-bundle install --local --deployment --without ri rdoc development test
+env GEM_HOME=$HOME/.rvm bundle install --local --deployment --without ri rdoc development test
 %endif
 rm -rf $HOME/.rvm
 
@@ -237,7 +237,7 @@ rm -rf  vendor/bundle/ruby/1.8/gems/rake-*/test
 rm -rf  vendor/bundle/ruby/1.8/gems/mini-magick-*/test
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
 cp -ar  vendor  $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
-cp -a Gemfile Gemfile.lock $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
+cp -a .bundle/config Gemfile Gemfile.lock $RPM_BUILD_ROOT/%{_libdir}/diaspora-bundle
 
 find  %{buildroot}/%{_libdir}/diaspora-bundle  \
     -type d  -fprintf dirs '%%%dir "%%p"\n'

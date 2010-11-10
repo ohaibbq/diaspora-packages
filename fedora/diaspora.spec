@@ -54,10 +54,6 @@ chmod 755 master/lib/cruise/build.rb
 %install
 rm -fr $RPM_BUILD_ROOT
 
-sed -i \
-    '/BUNDLE_PATH/s|:.*|: %{_libdir}/diaspora-bundle/vendor/bundle|' \
-     master/.bundle/config
-
 cp master/GNU-AGPL-3.0 master/COPYRIGHT master/README.md master/AUTHORS .
 cp master/pkg/fedora/README.md README-Fedora.md
 
@@ -76,17 +72,21 @@ cp -ar  master/.bundle $RPM_BUILD_ROOT/%{_datadir}/diaspora/master
 rm -rf $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/vendor/*
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/lib/diaspora/uploads
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/lib/diaspora/tmp
-cp %SOURCE2  $RPM_BUILD_ROOT/%{_datadir}/diaspora
+
+mkdir -p    $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/pkg/fedora
+cp %SOURCE2 $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/pkg/fedora
+%{SOURCE4}  $RPM_BUILD_ROOT/%{_datadir}/diaspora/master/pkg/fedora/diaspora-setup \
+            $RPM_BUILD_ROOT/%{_datadir}/diaspora/diaspora-setup
 
 cp master/config/app_config.yml.example  \
     $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora/app_config.yml
 cp master/config/server.sh  $RPM_BUILD_ROOT/%{_sysconfdir}/diaspora
 %{SOURCE4}  \
-    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/server.sh \
-    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/server.sh
+    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/server.sh \
+    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/server.sh
 %{SOURCE4}  \
-    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/app_config.yml  \
-    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/app_config.yml
+    $RPM_BUILD_ROOT%{_datadir}/diaspora/master/config/app_config.yml \
+    $RPM_BUILD_ROOT%{_sysconfdir}/diaspora/app_config.yml
 
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/log/diaspora
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/run/diaspora
