@@ -1,10 +1,6 @@
 ## Diaspora RPM tools
 
-Create RPM packages
-
-An alternative to the capistrano system, providing classic, binary RPM
-packages for deployment on Fedora.
-
+Provides classic, binary RPM packages for deployment on Fedora.
 
 #### Synopsis
 
@@ -15,7 +11,7 @@ Prerequisites:
   or [Installing-on-CentOS-Fedora](http://github.com/diaspora/diaspora/wiki/Installing-on-CentOS-Fedora).
 
 - For Fedora 14: install required ruby packages:
-    yum install ruby ruby-ri ruby-rdoc ruby-devel rubygems git rake
+    *yum install ruby ruby-ri ruby-rdoc ruby-devel rubygems git rake*
 
 - A personal environment to build RPM:s, also described in
   [RPM installation Fedora](http://github.com/diaspora/diaspora/wiki/Rpm-installation-on-fedora)
@@ -24,13 +20,12 @@ Install g++ and gcc:
     % yum install gcc-c++
 
 Bootstrap the distribution from git:
-    % sudo apt-get install git-core
     % git clone git://github.com/diaspora/diaspora-packages.git
     % cd diaspora-packages
 
 Create and install the diaspora bundle and application in
 diaspora-packages/source according to
-[source README](http://github.com/diaspora/diaspora-packages/tree/master/pkg/source/)
+[source README](http://github.com/diaspora/diaspora-packages/tree/master/source)
 
 Setup links from  tarballs to RPM source directory and create spec files:
     % cd fedora

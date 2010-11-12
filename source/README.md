@@ -1,8 +1,8 @@
 ## Diaspora source tarball generation
 
-Creates diaspora source tarballs.
+Creates generic diaspora source tarballs.
 
-#### Generic source synopsis
+#### Synopsis
 
 Bootstrap package from git repo:
     % sudo apt-get install git-core
@@ -68,6 +68,15 @@ using a older version known to work:
 or forcing a complete update of Gemfile.lock using 'bundle update' (a
 potentially problematic operation):
      % ./make-dist.sh -f bundle
+
+In other cases, script fails due to bad state e. g., after other errors.
+Try to just remove the cached diaspora dir:
+    % rm -rf dist/diaspora
+
+or everything:
+    % rm -rf dist
+
+before making a new try.
 
 #### Implementation
 

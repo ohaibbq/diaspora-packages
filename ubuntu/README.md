@@ -13,7 +13,7 @@ Bootstrap the distribution from git:
 
 Create and install the diaspora bundle and application in
 diaspora/pkg/source according to
-[source README](http://github.com/diaspora/diaspora-packages/tree/master/pkg/source/)
+[source README](http://github.com/diaspora/diaspora-packages/tree/master/source/)
 
 Install the dependencies (a good time for a coffe break):
     % cd pkg/ubuntu
@@ -80,5 +80,5 @@ available from time to time at
 
 mongodb is having problems occasionally. Sometimes the dependencies are not
 installed, and mongod refuses to start. invoke */usr/bin/mongod -f
-/etc/mongodb.conf* to test. The lockfile /var/lib/mongodb/mongod.conf is
+/etc/mongodb.conf* to test. The lockfile /var/lib/mongodb/mongod.lock is
 also a potential problem. Remove to make it start again.

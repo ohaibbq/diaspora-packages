@@ -55,7 +55,7 @@ su - diaspora << EOF
 #set -x #used by test scripts, keep
 
 [ -e  diaspora ] && {
-    echo "Moving existing  diaspora out of the way"
+    echo "Moving existing  diaspora out of the way to diaspora.$$"
     mv  diaspora  diaspora.$$
 }
 

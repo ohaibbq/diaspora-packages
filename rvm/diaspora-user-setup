@@ -25,7 +25,7 @@ test $UID = "0" && {
     exit 2
 }
 
-set -x
+#set -x
 
 [ -e "$HOME/.rvm/scripts/rvm" ] || {
     echo '#### Installing rvm ####'

@@ -27,7 +27,7 @@
 
 grep -v '^#' /etc/apt/sources.list | grep -q universe || {
     cat <<- EOF
-	"Warning: it looks like you have not enabled universe in your
+	Warning: it looks like you have not enabled universe in your
 	/etc/apt/sources.list. Most likely, this means trouble.
 	Better not try ;)
 	EOF
