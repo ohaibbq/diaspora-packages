@@ -143,9 +143,10 @@ function make_bundle()
                     ../$bundle_name
 
                 make_docs "vendor/bundle/ruby/1.8/gems/"  "../$bundle_name/docs"
-                mv vendor/cache ../$bundle_name/vendor
-                mv vendor/gems ../$bundle_name/vendor
-                mv git-repos ../$bundle_name
+                mv vendor/cache   ../$bundle_name/vendor
+                mv vendor/gems    ../$bundle_name/vendor
+                mv vendor/plugins ../$bundle_name/vendor
+                mv git-repos      ../$bundle_name
                 git checkout Gemfile
             cd ..
             tar czf $bundle_name.tar.gz $bundle_name
