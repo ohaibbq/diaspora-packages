@@ -19,7 +19,7 @@
 #
 #  Must run as root
 
-GIT_REPO=${GIT_REPO:-'http://github.com/leamas/diaspora.git'}
+GIT_REPO=${GIT_REPO:-'http://github.com/diaspora/diaspora.git'}
 DIASPORA_HOSTNAME=${1:-$(hostname)}
 
 test $UID = "0" || {
