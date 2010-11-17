@@ -142,7 +142,7 @@ pushd vendor/bundle/ruby/1.8/gems
     popd
 
     # in repo
-    pushd nokogiri-1.4.3.1/lib/nokogiri
+    pushd nokogiri-*/lib/nokogiri
         rm nokogiri.so
         ln -sf ../../ext/nokogiri/nokogiri.so .
     popd
