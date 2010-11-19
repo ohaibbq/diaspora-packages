@@ -32,11 +32,36 @@ function build_git_gems()
                         if (key == ":git")
                             url = $i
                     }
-                    cmd = sprintf( "git clone --bare --quiet %s\n", url)
+                    cmd = sprintf( "git clone --bare --quiet %s", url)
                     print "Running: ", cmd
                     system( cmd)
                 }'
-    mv devise-mongo_mapper.git  devise-mongo_mapper
+
+    mv devise-mongo_mapper.git devise-mongo_mapper
+
+    # See https://github.com/collectiveidea/devise-mongo_mapper/issues/issue/1
+    # Patch gemspeces which don't Dir.glob() their content.
+    git clone --quiet devise-mongo_mapper d-m_m > /dev/null
+    cd d-m_m
+        sed -i "s/\['README.md'\]/Dir.glob('README.md')/" \
+            devise-mongo_mapper.gemspec
+        git commit --quiet -a -m "make-dist.sh: Fixing file paths"
+        git push --quiet origin master
+    cd ..
+    rm -rf d-m_m
+
+    git clone --quiet em-websocket e-w > /dev/null
+    cd e-w
+        sed  -i -e '/s\..*files/,/\]/s/\("[^"]*"\)/Dir.glob(\1)/g' \
+                -e '/s\..*files/,/\]/s/\[//g'                      \
+                -e '/s\..*files/,/\]/s/,/ + /g'                    \
+                -e '/s\..*files/,/\]/s/\]//g'                      \
+                em-websocket.gemspec
+        git commit --quiet -a -m "make-dist.sh: Fixing file paths"
+        git push --quiet origin master
+    cd ..
+    rm -rf e-w
+
     for dir in *; do
         if  [ ! -e  $dir/*.gemspec ]; then
             cp -ar $dir ../$2
@@ -208,6 +233,13 @@ export LANG=C
 test $# -gt 1 -o $# -eq 0 && {
     usage;
     exit 2;
+}
+
+echo $PATH | grep -q '.rvm'  && {
+    cat <<- EOF
+	WARNING: Your PATH contains .rvm entries which might cause
+	all sort of trouble. You have been warned!
+	EOF
 }
 
 case $1 in

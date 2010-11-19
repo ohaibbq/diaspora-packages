@@ -67,7 +67,7 @@ function checkout()
         echo -n "$GIT_REPO" > .last-repo
 
         cd diaspora;
-        git checkout Gemfile Gemfile.lock
+        git checkout --quiet Gemfile Gemfile.lock
         git pull --quiet origin master
         [ -n "$1" ] && git reset --hard  --quiet  $1
         git_id  -n
