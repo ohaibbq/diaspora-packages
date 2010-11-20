@@ -101,22 +101,24 @@ function get_hostname
 
 function init_appconfig
 # Edit pod_url in hostname
-# Silently uses argumetn if present, else run dialog.
+# Silently uses hostname argument if present, else runs dialog.
 # Usage: init_appconfig <app_config.yml> [hostname]
 {
     config=$1
-    arg_hostname="$2"
-    hostname=$( awk '/pod_url:/ { print $2; exit }' <$config )
+    local arg_hostname="$2"
+    local curr_hostname=$( awk '/pod_url:/ { print $2; exit }' <$config )
 
     if [ -n "$arg_hostname" ]; then
-        sed -i "/pod_url:/s|$hostname|$arg_hostname|g" $config && \
-            echo "config/app_config.yml updated."
+        sed -i "/pod_url:/s|$curr_hostname|$arg_hostname|g" $config && \
+            echo "config/app_config.yml updated, pod_url is $arg_hostname."
         return 0
     else
+        ext_hostname=$( get_hostname)
         while : ; do
-            echo "Current hostname is \"$hostname\""
-            echo -n "Enter new hostname [$hostname] :"
+            echo "Current hostname is \"$curr_hostname\""
+            echo -n "Enter new hostname [$ext_hostname] :"
             read new_hostname garbage
+            [ -z "$new_hostname" ] && new_hostname="$ext_hostname"
             echo -n "Use \"$new_hostname\" as pod_url (Yes/No) [Yes]? :"
             read yesno garbage
             [ "${yesno:0:1}" = 'y' -o "${yesno:0:1}" = 'Y' -o -z "$yesno" ] && {
@@ -127,6 +129,18 @@ function init_appconfig
         done
     fi
 }
+
+function init_public
+# Create all dynamically generated files in public/ folder
+{
+    bundle exec thin \
+         -d --pid log/thin.pid --address localhost --port 3000 \
+         start
+    wget -q -O server.html http://localhost:3000 && rm server.html
+    bundle exec thin --pid log/thin.pid stop
+    bundle exec jammit
+}
+
 
 
 
