@@ -19,17 +19,17 @@ function fix_alphatag()
 #       *   Fri Sep 24 2010 name surname <email@com> 1.20100925_faf23207
 {
     local dist=$(rpm --eval %dist)
-    awk -v dist="$dist" -v version="$2" -v commit="$3" -v release="$4" \
+    rel_part="0.$4.$3$dist"
+    awk -v dist="$dist" -v version="$2" -v rel_part="$rel_part" \
       ' BEGIN    { done = 0 }
         /^[*]/   { if (done)
                        print
                    else
                    {
-                       s = sprintf( "-%s.%s%s\n", release, commit, dist)
-                       gsub( "-[0-9][.][^ ]*$", s)
-                       done = 1
-                       # add new gsub for version...
+                       gsub( "-[0-9][.][^ ]*$", "-" rel_part "\n")
+                       gsub( "[0-9.]*-", version "-")
                        print
+                       done = 1
                    }
                    next
                  }
@@ -53,17 +53,24 @@ function fix_bundle_deps
 }
 
 
-function patch()
+function patch_specfiles()
 # Patch  spec-files with current version-release
-# Usage: patch <version> <commit> <release>
+# Usage: patch_specfiles <version> <commit> <release>
 {
         sed -e "/^%define/s|HEAD|$2|"                  \
             -e '/^Version:/s|.*|Version:        '$1'|' \
                 <diaspora.spec >dist/diaspora.spec
+
         fix_alphatag dist/diaspora.spec $1 $2 $3
-        local bundle_id=$(git_id dist/diaspora/Gemfile)
         local dist_tag=$(rpm --eval %dist)
-        fix_bundle_deps  dist/diaspora.spec $1 "$RELEASE.${bundle_id}$dist_tag"
+        if [[ "$TAG" = 'none' ]]; then
+            local bundle_id=$(git_id dist/diaspora/Gemfile)
+            local rel_part="$RELEASE.${bundle_id}$dist_tag"
+        else
+            local bundle_id="$2"
+            local rel_part="0.$RELEASE.$TAG$dist_tag"
+        fi
+        fix_bundle_deps  dist/diaspora.spec $1 $rel_part
         sed -e "/^%define/s|HEAD|$bundle_id|"          \
             -e '/^Version:/s|.*|Version:        '$1'|' \
                 < diaspora-bundle.spec > dist/diaspora-bundle.spec
@@ -84,10 +91,14 @@ function prepare_rpm()
     local commit=$( checkout $1)
     echo "Release:             $RELEASE.$commit"
     echo "Rpm source dir:      $dest"
+    if [[ "$TAG" = 'none' ]]; then
+        patch_specfiles $VERSION $commit $RELEASE
+        local src="dist/diaspora-$VERSION-$commit.tar.gz"
+    else
+        patch_specfiles $VERSION $TAG $RELEASE
+        local src="dist/diaspora-$VERSION-$TAG.tar.gz"
+    fi
 
-    patch $VERSION $commit $RELEASE
-
-    local src="dist/diaspora-$VERSION-$commit.tar.gz"
     test -e $src ||
         cat <<- EOF
 	Warning: $src does not exist
@@ -95,8 +106,12 @@ function prepare_rpm()
 	EOF
     ln -sf $PWD/$src $dest
 
-    local bundle_commit=$( git_id dist/diaspora/Gemfile)
-    local bundle="dist/diaspora-bundle-$VERSION-$bundle_commit.tar.gz"
+    if [[ "$TAG" = 'none' ]]; then
+        local bundle_commit=$( git_id dist/diaspora/Gemfile)
+        local bundle="dist/diaspora-bundle-$VERSION-$bundle_commit.tar.gz"
+    else
+        local bundle="dist/diaspora-bundle-$VERSION-$TAG.tar.gz"
+    fi
     test -e $bundle ||
         cat <<- EOF
 	Warning: $bundle does not exist
@@ -113,7 +128,7 @@ function prepare_rpm()
         fi
     done
 
-    ( cd $dest;  find . -type l -not -readable -exec rm {} \;)
+    ( cd $dest;  find . -type l -not -readable -delete)
     echo "Source specfile:     dist/diaspora.spec"
     echo "Bundle specfile:     dist/diaspora-bundle.spec"
 }
@@ -128,7 +143,9 @@ function usage()
 	Options:
 
 	-h             Print this message.
-	-r  release    For prepare, mark with release nr, defaults to 1.
+	-r  release    Mark with release nr, defaults to 1.
+	-t  tag        Use  sources built from tag.
+	-v  version    Use specific version, defaults to 0.0
 	-u  uri        Git repository URI, defaults to
 	               $GIT_REPO.
 
@@ -142,14 +159,20 @@ function usage()
 
 
 commit='HEAD'
+TAG='none'
 BUNDLE_FIX='no'
-while getopts ":r:u:h" opt
+while getopts ":r:u:t:v:h" opt
 do
     case $opt in
-        r)   RELEASE="$OPTARG:"
-             ;;
         h)   usage
              exit 0
+             ;;
+        r)   RELEASE="$OPTARG"
+             ;;
+        t)   TAG="$OPTARG"
+             commit="$OPTARG"
+             ;;
+        v)   VERSION="$OPTARG"
              ;;
         u)   GIT_REPO="$OPTARG"
              ;;
@@ -160,7 +183,7 @@ do
 done
 shift $(($OPTIND - 1))
 
-typeset -r GIT_REPO RELEASE BUNDLE_FIX
+typeset -r GIT_REPO RELEASE BUNDLE_FIX TAG
 export LANG=C
 
 test $# -gt 0  && {

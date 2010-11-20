@@ -28,7 +28,7 @@ Conflicts:      diaspora-bundle-dev
 %endif
 
 Version:        0.0
-Release:        1.%{git_release}%{?dist}
+Release:        0.1.%{git_release}%{?dist}
 Provides:       diaspora-bundle = %version-%{release}
 License:        Ruby
 Group:          Applications/Communications

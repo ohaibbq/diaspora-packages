@@ -40,6 +40,7 @@ function git_id
     )
 }
 
+
 function checkout()
 # Checkout last version of diaspora unless it's already there.
 # Uses global GIT_REPO   to determine repo url.
@@ -68,11 +69,35 @@ function checkout()
 
         cd diaspora;
         git checkout --quiet Gemfile Gemfile.lock
-        git pull --quiet origin master
+        git pull --quiet --tags origin master
         [ -n "$1" ] && git reset --hard  --quiet  $1
         git_id  -n
     )
 }
+
+
+#
+# Best effort external hostname, defaults to local hostname.
+#
+function get_hostname
+{
+    local hostname=$(hostname) || hostname="localhost.localdomain"
+    local url
+    for url in 'http://checkip.dyndns.org' 'http://ekiga.net/ip/'
+    do
+        if wget -O ip -T 10 -q  $url; then
+            local ip_addr=$(egrep -o '[0-9.]+' ip) || continue
+
+            if local new_hostname=$( host $ip_addr) ; then
+                new_hostname="${new_hostname##*domain name pointer}"
+                break
+            fi
+        fi
+    done
+    rm -f ip
+    echo -n ${new_hostname:-$hostname}
+}
+
 
 function init_appconfig
 # Edit pod_url in hostname
@@ -102,4 +127,6 @@ function init_appconfig
         done
     fi
 }
+
+
 

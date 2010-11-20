@@ -8,7 +8,7 @@
 Summary:        A social network server
 Name:           diaspora
 Version:        0.0
-Release:        1.%{git_release}%{?dist}
+Release:        0.1.%{git_release}%{?dist}
 License:        AGPLv3
 Group:          Applications/Communications
 URL:            http://www.joindiaspora.com/

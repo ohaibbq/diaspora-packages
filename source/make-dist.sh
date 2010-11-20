@@ -76,11 +76,14 @@ function make_src
 # Usage:  make src  <commit>
 {
     echo "Using repo:          $GIT_REPO"
-
     commit=$(checkout ${1:-'HEAD'})
     echo "Commit id:           $commit"
 
-    RELEASE_DIR="diaspora-$VERSION-$commit"
+    if [[ "$TAGGED_REL" = 'true' ]]; then
+        RELEASE_DIR="diaspora-$VERSION-$1"
+    else
+        RELEASE_DIR="diaspora-$VERSION-$commit"
+    fi
     rm -rf dist/${RELEASE_DIR}
     mkdir dist/${RELEASE_DIR}
     cd dist
@@ -128,7 +131,6 @@ function make_docs()
 }
 
 
-
 function make_bundle()
 # Create the bundle tarball
 # Usage:  make_bundle [ commit, defaults to HEAD]
@@ -136,7 +138,12 @@ function make_bundle()
 {
     checkout ${1:-'HEAD'} >/dev/null
     local bundle_id=$( git_id dist/diaspora/Gemfile)
-    local bundle_name="diaspora-bundle-$VERSION-$bundle_id"
+    if [[ "$TAGGED_REL" = 'true' ]]; then
+        local bundle_name="diaspora-bundle-$VERSION-$1"
+    else
+        local bundle_name="diaspora-bundle-$VERSION-$bundle_id"
+    fi
+
     test -e  "dist/$bundle_name.tar.gz" || {
         echo "Creating bundle $bundle_name"
         cd dist
@@ -192,6 +199,8 @@ function usage()
 
 	-h             Print this message.
 	-c  commit     Use a given commit, defaults to last checked in.
+	-t  tag        Use a tag instead of date_commit tarball name.
+	-v  version    Use a given version, defaults to 0.0
 	-u  uri        Git repository URI, defaults to
 	               $GIT_REPO.
 	-f             For bundle, fix dependencies by running 'bundle update'
@@ -208,12 +217,16 @@ function usage()
 
 commit='HEAD'
 BUNDLE_FIX='no'
-while getopts ":c:u:fh" opt
+while getopts ":c:u:v:t:fh" opt
 do
     case $opt in
         u)   GIT_REPO="$OPTARG"
              ;;
+        v)   VERSION="$OPTARG"
+             ;;
         c)   commit="${OPTARG:0:7}"
+             ;;
+        t)   tag="$OPTARG"
              ;;
         f)   BUNDLE_FIX='yes'
              ;;
@@ -227,13 +240,25 @@ do
 done
 shift $(($OPTIND - 1))
 
-typeset -r GIT_REPO  BUNDLE_FIX
-export LANG=C
 
 test $# -gt 1 -o $# -eq 0 && {
     usage;
     exit 2;
 }
+
+if [[ -n "$tag" &&  "$commit" != 'HEAD' ]]; then
+    echo "Use either -t or -c."
+    exit 2
+fi
+
+TAGGED_REL=""
+if [[ -n "$tag" ]]; then
+    TAGGED_REL="true"
+    commit=$tag
+fi
+
+typeset -r GIT_REPO  BUNDLE_FIX VERSION TAGGED_REL
+export LANG=C
 
 echo $PATH | grep -q '.rvm'  && {
     cat <<- EOF
