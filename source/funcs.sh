@@ -149,3 +149,18 @@ function init_public
     bundle exec jammit
 }
 
+function init_db
+# Setup database, echo OK message but no error message.
+{
+    if bundle exec rake db:seed:dev; then
+        cat <<- EOF
+	Database config OK. Users korth/evankorth, tom/evankorth in place
+	More details ./diaspora/db/seeds/tom.rb. and ./diaspora/db/seeds/dev.rb.
+	EOF
+        return
+    else
+        return  1
+    fi
+}
+
+

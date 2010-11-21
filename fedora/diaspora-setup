@@ -43,18 +43,20 @@ test -e config/app_config.yml ||
 
 init_appconfig config/app_config.yml $arg_hostname
 
-if bundle exec rake db:seed:dev; then
-    echo "Database config OK, users tom/evankorth, korth/evankorth in place"
-else
+init_db || {
     cat <<- EOF
-
-	Database config failed. You might want to remove all db files with
-	'rm -rf /var/lib/mongodb/*' and/or reset the config file by
-	'cp config/app_config.yml.example config/app_config.yml' before
-	making a new try. Also, make sure the mongodb server is running
-	e. g., using '/sbin/service mongod status'.
+	Database config failed. You might want to
+	  - Just remove the db lock file: rm /var/lib/mongodb/mongod.lock
+	  - Drop the diaspora mongo database:
+	        % mongo diaspora-development
+	        > db.dropDatabase()
+	  - Remove all db files: rm -rf /var/lib/mongodb/*
+	  - Reset the config file by
+	        cp config/app_config.yml.example config/app_config.yml
+	Also, make sure the mongodb server is running e. g., using
+	    service mongod status
 	EOF
-fi
+}
 
 init_public
 

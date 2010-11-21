@@ -77,21 +77,14 @@ cp config/app_config.yml.example config/app_config.yml
 source pkg/source/funcs.sh
 init_appconfig config/app_config.yml "$DIASPORA_HOSTNAME"
 
-
-echo "Setting up DB..."
-if  bundle exec rake db:seed:dev ; then
-    cat <<- EOM
-	DB ready. Logins -> tom and korth, password -> evankorth.
-	More details ./diaspora/db/seeds/tom.rb. and ./diaspora/db/seeds/dev.rb.
-	EOM
-else
+init_db || {
     cat <<- EOM
 	Database config failed. You might want to remove all db files
 	and/or reset the config file by
-        'cp config/app_config.yml.example config/app_config.yml' before
+	'cp config/app_config.yml.example config/app_config.yml' before
 	making a new try. Also, make sure the mongodb server is running.
 	EOM
-fi
+}
 
 pidfile="$PWD/log/diaspora-wsd.pid"
 echo "To start server: diaspora/script/server -d"
