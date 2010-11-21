@@ -136,11 +136,16 @@ function init_public
     bundle exec thin \
          -d --pid log/thin.pid --address localhost --port 3000 \
          start
-    wget -q -O server.html http://localhost:3000 && rm server.html
+    for ((i = 0; i < 20; i += 1)) do
+        sleep 2
+        wget -q -O server.html http://localhost:3000 && \
+            rm server.html && break
+    done
     bundle exec thin --pid log/thin.pid stop
+    if [ -e server.html ]; then
+        echo "Cannot get index.html from web server (aborted)" >&2
+        return 2
+    fi
     bundle exec jammit
 }
-
-
-
 
