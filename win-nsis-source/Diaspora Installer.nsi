@@ -1,6 +1,6 @@
 ; Diaspora installer by Hexagon <robinnilsson@gmail.com>
 
-; TODO!! 
+; TODO!
 ;   * Fetch portableGit binaries
 ;   * Add batch script for updating diaspora
 ;   * Check why mongoDB does not start
