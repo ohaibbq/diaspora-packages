@@ -15,7 +15,7 @@ release=$( lsb_release -a | awk '/Release:/ {print $2}')
 
 sudo apt-get update
 sudo apt-get install --no-install-recommends -qy \
-     build-essential libxslt1-dev  libxml2  java \
+     build-essential libxslt1-dev  libxml2  openjdk-6-jre-headless \
      ruby-full mongodb rake python-software-properties git-core \
      imagemagick libmagick9-dev
 if [ "$release" = "10.04" ]; then
