@@ -40,6 +40,7 @@ BuildRoot:      %{_tmpdir}/not-used-since-F13/
 
 Requires(pre):  shadow-utils
 Requires:       ruby(abi) = 1.8
+Requires:	java >= 1.6.0
 BuildRequires:  rubygems
 
 %description
