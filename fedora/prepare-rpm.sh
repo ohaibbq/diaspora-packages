@@ -39,7 +39,7 @@ function fix_alphatag()
 
 function fix_bundle_deps
 # usage: fix_bundle_deps <specfile> <version> <commit>
-# Patches: Requires:   diaspora-bundle = 0.0-20101021-aefsf323148
+# Patches: Requires:   diaspora-bundle = 0.0-0.1.20101021-aefsf323148
 {
         awk -v vers="$2-$3" \
                 ' /Requires:/ { if ($2 == "diaspora-bundle")
@@ -65,7 +65,7 @@ function patch_specfiles()
         local dist_tag=$(rpm --eval %dist)
         if [[ "$TAG" = 'none' ]]; then
             local bundle_id=$(git_id dist/diaspora/Gemfile)
-            local rel_part="$RELEASE.${bundle_id}$dist_tag"
+            local rel_part="0.$RELEASE.${bundle_id}$dist_tag"
         else
             local bundle_id="$2"
             local rel_part="0.$RELEASE.$TAG$dist_tag"
