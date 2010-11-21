@@ -36,7 +36,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "data\README.txt"
+  !insertmacro MUI_PAGE_LICENSE "installer-data\README.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -62,11 +62,11 @@ Section "Diaspora" SecDiaspora
   CreateDirectory "$INSTDIR\root\opt\diaspora"
 
   SetOutPath "$INSTDIR\"
-  File "data\install-gems.bat"
-  File "data\run-diaspora.bat"
+  File "installer-data\install-gems.bat"
+  File "installer-data\run-diaspora.bat"
 
   SetOutPath "$INSTDIR\tmp\"
-  File "data\patch_rbreadline.rb"
+  File "installer-data\patch_rbreadline.rb"
 
 
 
@@ -158,7 +158,7 @@ Section "MongoDB (1.6.3)" SecMongo
 
   SetOutPath "$INSTDIR"
   CreateDirectory "$INSTDIR\root\opt\mongodb-data"
-  File "data\run-mongodb.bat"
+  File "installer-data\run-mongodb.bat"
 
   inetc::get /BANNER 	"Downloading MongoDB" \
 			"http://fastdl.mongodb.org/win32/mongodb-win32-i386-1.6.3.zip" \
